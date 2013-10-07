@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# TODO: Detect if symlink and use target instead
+# TODO: Allow override of basedir
+# TODO: Make it run from any file location without hard coding
+#       paths
+
+# Figure out if our executable is a symlink - if so
+# use the target instead of $0
+symlink_target=$(file $0 | perl -ne "if(\$_=~/symbolic link to \`(.*)\'\$/) {print \"\$1\";}")
+if [[ $symlink_target != "" ]]; then
+    basedir=$(dirname $symlink_target)
+else
+    basedir=$(dirname $0)
+fi
+
+jar="$basedir/WebdavBulkDeleter-1.0.jar"
+log4j_location="$basedir/log4j.properties"
+
+java=""
+
+# Try known MH location first
+if [[ -x "/usr/local/blackboard/jdk/bin/java" ]]; then
+    java="/usr/local/blackboard/jdk/bin/java"
+fi
+# If it is not in the above location then try the path
+if [[ $java == "" ]]; then
+    # Try the path first
+    java=$(which java)
+fi
+# Finally, if it is still not found try JAVA_HOME
+if [[ $java == "" ]] && [[ $JAVA_HOME != "" ]]; then
+    if [[ -x "$JAVA_HOME/bin/java" ]]; then
+        java="$JAVA_HOME/bin/java"
+    fi
+fi
+
+$java -Dlog4j.configuration=$log4j_location -jar $jar $@
+
