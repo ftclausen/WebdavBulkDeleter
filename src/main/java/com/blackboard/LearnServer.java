@@ -16,32 +16,15 @@
 package com.blackboard;
 
 import java.io.IOException;
-import java.security.KeyStore;
 
 
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
-import com.blackboard.TrustAllSSLSocketFactory;
-import com.googlecode.sardine.Sardine;
 import com.googlecode.sardine.SardineFactory;
 import com.googlecode.sardine.impl.SardineImpl;
 
 public class LearnServer {
-	static Logger logger = Logger.getLogger(LearnServer.class);
+	static Logger logger = WebdavBulkDeleterClient.logger;
 	
 	private String url = null;
 	private String password = null;
@@ -73,57 +56,16 @@ public class LearnServer {
 		}
 		
 		logger.info("Connecting to " + url + " as user " + userName);
-		// Create a custom httpclient object that accepts all SSL certs
-		// Protocol acceptAllCerts = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
-		// URI uri = new URI(url, true);
-		// GetMethod method = new GetMethod(uri.getPathQuery());
-		// HostConfiguration hc = new HostConfiguration();
-		// hc.setHost(uri.getHost(), uri.getPort(), acceptAllCerts);
-		//AbstractHttpClient client = new HttpClient();
-		if (verifyCertStatus == false) {
-			AbstractHttpClient httpclient = getTrustAllSSLHttpClient();
-			logger.debug("Creating new sardine instance via custom httpclient");
-			sardine = new SardineImpl(httpclient, userName, password);
-		} else {
-			logger.debug("Creating sardine instance with SardineFactory");
-			sardine = (SardineImpl) SardineFactory.begin(userName, password);
-		}
-		
-		
-		
+        logger.debug("Creating sardine instance with SardineFactory");
+        sardine = (SardineImpl) SardineFactory.begin(userName, password);
+
 		if (sardine.exists(url)) {
 			logger.info("Successfully connected to " + url);
 		} else {
 			throw new IOException("Cannot connect to server or access specified path");
 		}
 	}
-	
-	private AbstractHttpClient getTrustAllSSLHttpClient() {
-		try {
-			KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			trustStore.load(null, null);
-			
-			SSLSocketFactory sf = new TrustAllSSLSocketFactory(trustStore);
-			sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			
-			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-			
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-			registry.register(new Scheme("https", sf, 443));
-			
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-			return new DefaultHttpClient(ccm, params);
-		} catch (Exception e) {
-			System.out.println("WARNING: Could not create Trust All SSL client, using default" + e.getMessage());
-			return new DefaultHttpClient();
-		}
-	}
-	
 
-	
 	public boolean exists(String courseId) {
 		logger.debug("Check for course at : " + url + "/" + courseId);
 		boolean found = false;
@@ -190,14 +132,6 @@ public class LearnServer {
 	
 	public String getUrl() {
 		return url;
-	}
-
-	public boolean getVerifyCertStatus() {
-		return verifyCertStatus;
-	}
-
-	public void setVerifyCertStatus(boolean verifyCertStatus) {
-		this.verifyCertStatus = verifyCertStatus;
 	}
 	
 	

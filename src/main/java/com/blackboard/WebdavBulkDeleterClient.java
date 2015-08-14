@@ -40,9 +40,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.*;
 
 public class WebdavBulkDeleterClient {
 	
@@ -74,7 +72,7 @@ public class WebdavBulkDeleterClient {
 		
 		while (it.hasNext()) {
 			Map.Entry<String, String> pairs = it.next();
-			if (line.hasOption(pairs.getKey()) == false) {
+			if (!line.hasOption(pairs.getKey())) {
 				logger.error("Please specify option --" + pairs.getKey());
 				error = true;
 			}
@@ -88,7 +86,14 @@ public class WebdavBulkDeleterClient {
 		if (System.getProperty("log4j.configuration") != null) {
 			PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 		} else {
-			BasicConfigurator.configure();
+            ConsoleAppender console = new ConsoleAppender();
+            String PATTERN = "%d [%p|%c|%C{1}] %m%n";
+            console.setLayout(new PatternLayout(PATTERN));
+            console.setThreshold(Level.DEBUG);
+            console.activateOptions();
+            logger.setAdditivity(false);
+            logger.addAppender(console);
+            //Logger.getRootLogger().addAppender(console);
 		}
 		
 		// Perform command line parsing in an as friendly was as possible. 
@@ -105,11 +110,6 @@ public class WebdavBulkDeleterClient {
 		optionsAvailable.put("url", "The Learn URL - usually https://example.com/bbcswebdav/courses");
 		
 		options = addAllOptions (options, optionsAvailable);
-		
-		options.addOption(OptionBuilder.withLongOpt("no-verify-ssl")
-										.withDescription("Don't verify SSL")
-										.hasArg(false)
-										.create() );
 
 		CommandLine line = null;
 		try {
@@ -157,10 +157,16 @@ public class WebdavBulkDeleterClient {
 			}
 		} catch (IllegalArgumentException e) {
 			logger.fatal(e.getLocalizedMessage());
+            if (logger.getLevel() == Level.DEBUG) {
+                e.printStackTrace();
+            }
 			System.exit(1);
 		} catch (IOException ioe) {
 			logger.debug(ioe);
 			logger.fatal(ioe.getMessage());
+            if (logger.getLevel() == Level.DEBUG) {
+                ioe.printStackTrace();
+            }
 		}
 		
 	}
