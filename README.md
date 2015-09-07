@@ -7,7 +7,7 @@ location.
 It requires the site be using a valid SSL certificate known to the 
 Java JDK running this tool.
 
-# Linux/Unix Quickstart
+# Linux/OS X/Unix Quickstart
 
 You can use the utility by running the `webdavbulkdeleter.sh` script as
 following replacing the example credentials and host name with your own
