@@ -17,7 +17,7 @@ following replacing the example credentials and host name with your own
 this script will build the tool if necessary and then execute. Some more info
 about the options :
 
-* `--deletion-list` - a user supplied text file of one item per line to delete
+* `--deletion-list` - a user supplied text file of one folder per line to delete
 * `--user` - Username authorised to delete the requested items
 * `--password` - Password associated with the above user
 * `--url` - A Webdav enabled URL
