@@ -12,3 +12,6 @@ log
 .settings
 .gradle
 build
+workspace.xml
+*.iws
+tasks.xml
