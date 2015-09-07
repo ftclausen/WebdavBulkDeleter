@@ -7,7 +7,7 @@ location.
 It requires the site be using a valid SSL certificate known to the 
 Java JDK running this tool.
 
-# Running
+# Linux/Unix Quickstart
 
 You can use the utility by running the `webdavbulkdeleter.sh` script as
 following replacing the example credentials and host name with your own
@@ -21,3 +21,25 @@ about the options :
 * `--user` - Username authorised to delete the requested items
 * `--password` - Password associated with the above user
 * `--url` - A Webdav enabled URL
+
+# Windows
+
+There is not yet a quick launch wrapper script for windows so you'll have to 
+build it manually then run the Jar file directly.
+
+**All the commands below should happen from the base of the WebdavBuildDeleter
+Git repo**
+
+## Building
+
+You can build the tool by running the Gradle wrapper manually as follows
+
+`gradlew.bat shadowJar`
+
+## Running
+
+You can run the tool as follows
+
+`java -jar build\libs\WebdavBulkDeleter-all.jar`
+
+
