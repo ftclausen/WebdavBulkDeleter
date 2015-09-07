@@ -34,12 +34,13 @@ Git repo**
 
 You can build the tool by running the Gradle wrapper manually as follows
 
-`gradlew.bat shadowJar`
+    gradlew.bat shadowJar
 
 ## Running
 
 You can run the tool as follows
 
-`java -jar build\libs\WebdavBulkDeleter-all.jar`
+    java -jar build\libs\WebdavBulkDeleter-all.jar --deletion-list /tmp/test --user administrator --password 'secret' --url https://learn.example.com/bbcswebdav/courses
+
 
 
